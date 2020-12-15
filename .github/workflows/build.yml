@@ -19,22 +19,28 @@ jobs:
           jekyll_src: "./"
           target_branch: "build"
         id: 'build'
-
-      - name: Call Hook
-        uses: distributhor/workflow-webhook@v1
+      
+      - name: Dump steps context
         env:
-          webhook_url: ${{ secrets.WEBHOOK_URL_PROD }}
-          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
-          data: '${{ steps.build.outputs }}'
-      - name: Call Hook
-        uses: distributhor/workflow-webhook@v1
-        env:
-          webhook_url: ${{ secrets.WEBHOOK_URL_STAGING }}
-          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
-          data: '${{ steps.build.outputs }}'
-      - name: Call Hook
-        uses: distributhor/workflow-webhook@v1
-        env:
-          webhook_url: ${{ secrets.WEBHOOK_URL_LOCAL }}
-          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
-          data: '${{ steps.build.outputs }}'
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo "$STEPS_CONTEXT"
+      
+      # - name: Call Hook PROD success
+      #   uses: distributhor/workflow-webhook@v1
+      #   if: steps.build.outputs.status == 'failure' || steps.world.outputs.status == 'failure'
+      #   env:
+      #     webhook_url: ${{ secrets.WEBHOOK_URL_PROD }}
+      #     webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+      #     data: '{ "status": "hammer", "drink" : "beer" }'
+      # - name: Call Hook
+      #   uses: distributhor/workflow-webhook@v1
+      #   env:
+      #     webhook_url: ${{ secrets.WEBHOOK_URL_STAGING }}
+      #     webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+      #     data: '${{ steps.build.outputs }}'
+      # - name: Call Hook
+      #   uses: distributhor/workflow-webhook@v1
+      #   env:
+      #     webhook_url: ${{ secrets.WEBHOOK_URL_LOCAL }}
+      #     webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+      #     data: '${{ steps.build.outputs }}'
